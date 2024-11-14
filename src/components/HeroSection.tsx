@@ -44,21 +44,21 @@ export function HeroSection() {
 
   return (
     <div className="relative h-[56.25vw] max-h-[80vh] min-h-[400px] mb-8 group overflow-hidden">
-      {/* Background Image/Video Container */}
+      {/* Background Container */}
       <div className="absolute inset-0">
         {isVideoPlaying && trailer ? (
           <div className="relative w-full h-full">
-            {/* Background Image (shown while video loads) */}
+            {/* Background Image */}
             <img
               src={`https://image.tmdb.org/t/p/original${currentItem.backdrop_path}`}
               alt=""
               className="w-full h-full object-cover"
             />
             
-            {/* Video Container with Netflix-style positioning */}
-            <div className="absolute inset-0 flex items-center">
-              <div className="relative w-[70%] h-full ml-auto overflow-hidden">
-                {/* Custom video container with edge gradients */}
+            {/* Video Container - Hidden on mobile, adjusted for tablet/desktop */}
+            <div className="absolute inset-0 hidden sm:flex items-center">
+              <div className="relative w-full md:w-[70%] h-full ml-auto overflow-hidden">
+                {/* Video wrapper with gradients */}
                 <div className="absolute inset-0">
                   <div className="relative w-full h-full">
                     <iframe
@@ -68,9 +68,11 @@ export function HeroSection() {
                       title="trailer"
                     />
                   </div>
-                  {/* Edge gradients */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-zinc-900 via-transparent to-transparent w-1/3" />
-                  <div className="absolute inset-0 bg-gradient-to-l from-zinc-900 via-transparent to-transparent w-1/4 ml-auto" />
+                  {/* Edge gradients - Adjusted for different screen sizes */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-zinc-900 via-transparent to-transparent 
+                                w-1/3 sm:w-1/4 md:w-1/3" />
+                  <div className="absolute inset-0 bg-gradient-to-l from-zinc-900 via-transparent to-transparent 
+                                w-1/4 ml-auto" />
                   <div className="absolute inset-0 bg-gradient-to-b from-zinc-900/30 via-transparent to-zinc-900/30" />
                 </div>
               </div>
@@ -84,40 +86,54 @@ export function HeroSection() {
           />
         )}
         
-        {/* Base gradients for content visibility */}
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/60 to-zinc-900/30" />
-        <div className="absolute inset-0 bg-gradient-to-r from-zinc-900 via-zinc-900/90 to-transparent" />
+        {/* Base gradients - Responsive adjustments */}
+        <div className="absolute inset-0 bg-gradient-to-t 
+                      from-zinc-900 
+                      via-zinc-900/60 
+                      to-zinc-900/30" />
+        <div className="absolute inset-0 bg-gradient-to-r 
+                      from-zinc-900 
+                      via-zinc-900/90 sm:via-zinc-900/80 
+                      to-transparent" />
       </div>
 
-      {/* Content */}
-      <div className="absolute inset-0 flex flex-col justify-center">
-        <div className="px-4 sm:px-8 md:px-20 w-[45%] relative z-10">
-          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">
+      {/* Content - Responsive layout */}
+      <div className="absolute inset-0 flex flex-col justify-end sm:justify-center">
+        <div className="p-4 sm:px-8 md:px-20 
+                      w-full sm:w-[60%] md:w-[45%] 
+                      relative z-10 
+                      space-y-3 sm:space-y-4">
+          {/* Title - Responsive typography */}
+          <h1 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-bold">
             {currentItem.title || currentItem.name}
           </h1>
-          <p className="text-sm sm:text-base md:text-lg text-gray-200 mb-4 sm:mb-6 
-                       line-clamp-3 sm:line-clamp-4">
+
+          {/* Overview - Responsive text and clamp */}
+          <p className="text-sm sm:text-base md:text-lg text-gray-200
+                      line-clamp-2 sm:line-clamp-3 md:line-clamp-4">
             {currentItem.overview}
           </p>
           
-          {/* Buttons and Info */}
-          <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+          {/* Buttons and Info - Responsive layout */}
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:gap-4">
             {trailer && (
               <button
                 onClick={() => setIsVideoPlaying(!isVideoPlaying)}
-                className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 
-                         bg-red-600 hover:bg-red-700 transition-colors 
-                         rounded-lg text-white text-sm sm:text-base font-semibold"
+                className="inline-flex items-center px-3 sm:px-4 md:px-6 
+                         py-1.5 sm:py-2 md:py-3 
+                         bg-red-600 hover:bg-red-700 
+                         transition-colors rounded-lg 
+                         text-white text-sm sm:text-base font-semibold"
               >
                 {isVideoPlaying ? (
                   <>
-                    <StopCircleIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
-                    Stop Trailer
+                    <StopCircleIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5" />
+                    <span className="hidden sm:inline">Stop</span> Trailer
                   </>
                 ) : (
                   <>
-                    <PlayIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
-                    Play Trailer
+                    <PlayIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5" />
+                    <span className="hidden sm:inline">Play</span> Trailer
                   </>
                 )}
               </button>
@@ -125,15 +141,17 @@ export function HeroSection() {
             
             <Link
               to={getDetailsLink(currentItem)}
-              className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 
-                       bg-gray-800/80 hover:bg-gray-700/80 transition-colors 
-                       rounded-lg text-white text-sm sm:text-base font-semibold"
+              className="inline-flex items-center px-3 sm:px-4 md:px-6 
+                       py-1.5 sm:py-2 md:py-3 
+                       bg-gray-800/80 hover:bg-gray-700/80 
+                       transition-colors rounded-lg 
+                       text-white text-sm sm:text-base font-semibold"
             >
-              <InfoIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
-              Details
+              <InfoIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5" />
+              <span className="hidden sm:inline">More</span> Info
             </Link>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               <span className="text-yellow-400">★</span>
               <span className="font-semibold text-sm sm:text-base">
                 {currentItem.vote_average.toFixed(1)}
@@ -141,21 +159,22 @@ export function HeroSection() {
             </div>
           </div>
 
-          {/* Streaming Providers */}
+          {/* Streaming Providers - Responsive */}
           {currentItem.watchProviders && (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <WatchProviders 
                 providers={currentItem.watchProviders} 
                 compact={true}
-                maxProviders={4}
+                maxProviders={window.innerWidth < 640 ? 3 : 4}
               />
             </div>
           )}
         </div>
       </div>
 
-      {/* Navigation Dots */}
-      <div className="absolute bottom-4 right-4 flex space-x-1.5 sm:space-x-2">
+      {/* Navigation Dots - Responsive positioning */}
+      <div className="absolute bottom-2 sm:bottom-4 right-2 sm:right-4 
+                    flex space-x-1 sm:space-x-2">
         {featured.map((_, index) => (
           <button
             key={index}
@@ -163,10 +182,10 @@ export function HeroSection() {
               setCurrentIndex(index);
               setIsVideoPlaying(false);
             }}
-            className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 
+            className={`h-1 sm:h-1.5 md:h-2 rounded-full transition-all duration-300 
                       ${index === currentIndex 
-                        ? 'bg-red-500 w-6 sm:w-8' 
-                        : 'bg-gray-400 hover:bg-gray-300 w-1.5 sm:w-2'}`}
+                        ? 'bg-red-500 w-4 sm:w-6 md:w-8' 
+                        : 'bg-gray-400 hover:bg-gray-300 w-1 sm:w-1.5 md:w-2'}`}
           />
         ))}
       </div>
