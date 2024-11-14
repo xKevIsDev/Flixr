@@ -81,7 +81,7 @@ export function Layout() {
                 {isSidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </button>
               <Link to="/" className="flex items-center ml-2">
-                <span className="ml-2 text-3xl font-bold">Fl<span className="text-red-600">i</span>xr</span>
+                <span className="mr-4 text-3xl font-bold">Fl<span className="text-red-600">i</span>xr</span>
               </Link>
             </div>
             <div className="flex items-center space-x-4">
@@ -109,42 +109,14 @@ export function Layout() {
         <div className="overflow-y-auto h-full">
           {isSidebarOpen && (
             <div className="p-4 space-y-6">
-              {/* Media Type */}
-              <div className="space-y-2">
-                <h3 className="text-sm font-semibold text-gray-400 uppercase">Media Type</h3>
-                <div className="space-y-1">
-                  <NavLink 
-                    to="/shows" 
-                    className={({ isActive }) =>
-                      `flex items-center p-2 rounded-lg transition-colors ${isActive ? 'bg-red-600' : 'hover:bg-zinc-900'}`
-                    }
-                    onClick={() => setSelectedMediaType('tv')}
-                  >
-                    <Tv2 className="h-5 w-5 mr-3" />
-                    TV Shows
-                  </NavLink>
-                  <NavLink 
-                    to="/movies" 
-                    className={({ isActive }) =>
-                      `flex items-center p-2 rounded-lg transition-colors ${isActive ? 'bg-red-600' : 'hover:bg-zinc-900'}`
-                    }
-                    onClick={() => setSelectedMediaType('movie')}
-                  >
-                    <Film className="h-5 w-5 mr-3" />
-                    Movies
-                  </NavLink>
-                </div>
-              </div>
 
               {/* Categories */}
               <div className="space-y-2">
-                <button
-                  onClick={() => setShowCategories(!showCategories)}
+                <div
                   className="flex items-center justify-between w-full text-sm font-semibold text-gray-400 uppercase"
                 >
                   <span>Categories</span>
-                  <ChevronDown className={`h-4 w-4 transition-transform ${showCategories ? 'rotate-180' : ''}`} />
-                </button>
+                </div>
                 {showCategories && (
                   <div className="space-y-1">
                     {genres.map(genre => (
@@ -153,7 +125,7 @@ export function Layout() {
                         to={`/category/${genre.id}?type=${selectedMediaType}`}
                         className={({ isActive }) =>
                           `block p-2 rounded-lg transition-colors ${
-                            isActive ? 'bg-red-600' : 'hover:bg-zinc-900'
+                            isActive ? 'bg-red-600' : 'hover:bg-white hover:text-red-600'
                           }`
                         }
                         onClick={() => {

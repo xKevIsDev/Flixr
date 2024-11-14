@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Play, Star } from 'lucide-react';
 import { getImageUrl } from '../config/api';
+import { WatchProviders } from '../components/WatchProviders';
 
 interface WatchProvider {
   logo_path: string;
@@ -66,40 +67,12 @@ export function ShowCard({
             
             {/* Watch Providers */}
             {watchProviders && (
-              <div className="space-y-1">
-                {watchProviders.flatrate && watchProviders.flatrate.length > 0 && (
-                  <div className="flex items-center gap-1">
-                    <span className="text-xs text-gray-400">Stream:</span>
-                    <div className="flex -space-x-2">
-                      {watchProviders.flatrate.slice(0, 3).map((provider) => (
-                        <img
-                          key={provider.provider_name}
-                          src={`https://image.tmdb.org/t/p/original${provider.logo_path}`}
-                          alt={provider.provider_name}
-                          title={provider.provider_name}
-                          className="w-5 h-5 rounded-full border border-zinc-800"
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-                
-                {watchProviders.rent && watchProviders.rent.length > 0 && (
-                  <div className="flex items-center gap-1">
-                    <span className="text-xs text-gray-400">Rent:</span>
-                    <div className="flex -space-x-2">
-                      {watchProviders.rent.slice(0, 3).map((provider) => (
-                        <img
-                          key={provider.provider_name}
-                          src={`https://image.tmdb.org/t/p/original${provider.logo_path}`}
-                          alt={provider.provider_name}
-                          title={provider.provider_name}
-                          className="w-5 h-5 rounded-full border border-zinc-800"
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
+              <div className="scale-90 origin-left">
+                <WatchProviders 
+                  providers={watchProviders} 
+                  compact={true}
+                  maxProviders={3}
+                />
               </div>
             )}
           </div>

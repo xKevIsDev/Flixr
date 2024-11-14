@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { ShowCard } from '../components/ShowCard';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { searchMultiContent } from '../services/api';
+import { ShowCardSkeleton } from '../components/Skeletons';
 
 export function Search() {
   const [searchParams] = useSearchParams();
@@ -86,7 +87,11 @@ export function Search() {
       </div>
 
       {loading && page === 1 ? (
-        <LoadingSpinner />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {[...Array(12)].map((_, i) => (
+            <ShowCardSkeleton key={i} />
+          ))}
+        </div>
       ) : error ? (
         <div className="text-center text-red-500 p-8">{error}</div>
       ) : results.length === 0 ? (
@@ -117,7 +122,7 @@ export function Search() {
             <div className="mt-8 text-center">
               <button
                 onClick={() => setPage(prev => prev + 1)}
-                className="px-6 py-3 bg-red-600 hover:bg-purple-600 rounded-lg transition-colors"
+                className="px-6 py-3 bg-red-600 hover:bg-white hover:text-black rounded-lg transition-colors"
               >
                 Load More Results
               </button>

@@ -3,6 +3,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { ShowCard } from '../components/ShowCard';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { useCategory } from '../hooks/useCategory';
+import { ShowCardSkeleton } from '../components/Skeletons';
 
 export function Category() {
   const { id } = useParams();
@@ -32,7 +33,6 @@ export function Category() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 space-y-4 sm:space-y-0">
         <h1 className="text-3xl font-bold">{categoryName}</h1>
         <div className="flex items-center space-x-4">
-          <span className="text-gray-400">Show:</span>
           <div className="flex gap-2">
             <button
               onClick={() => handleMediaTypeChange('tv')}
@@ -83,13 +83,19 @@ export function Category() {
         </div>
       )}
 
-      {loading && <LoadingSpinner />}
+      {loading && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {[...Array(12)].map((_, i) => (
+            <ShowCardSkeleton key={i} />
+          ))}
+        </div>
+      )}
 
       {hasMore && !loading && items.length > 0 && (
         <div className="mt-8 text-center">
           <button
             onClick={() => setPage(prev => prev + 1)}
-            className="px-6 py-3 bg-red-600 hover:bg-purple-600 rounded-lg transition-colors"
+            className="px-6 py-3 bg-red-600 hover:bg-white hover:text-black rounded-lg transition-colors"
           >
             Load More
           </button>

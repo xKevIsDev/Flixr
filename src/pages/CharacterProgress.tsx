@@ -40,7 +40,7 @@ export function CharacterProgress() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <Link to={`/show/${id}`} className="inline-flex items-center text-red-600 hover:text-purple-400 mb-6">
+      <Link to={`/show/${id}`} className="inline-flex items-center text-red-600 hover:text-white mb-6">
         <ArrowLeft className="h-5 w-5 mr-2" />
         Back to Show
       </Link>

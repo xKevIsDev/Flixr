@@ -36,7 +36,7 @@ export function VideoPlayer({ videos }: VideoPlayerProps) {
           <button
             key={video.id}
             onClick={() => handlePlay(video)}
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-purple-600 rounded-lg transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-white hover:text-black rounded-lg transition-colors"
           >
             <Play className="w-4 h-4" />
             {video.type === 'Trailer' ? 'Watch Trailer' : video.type}

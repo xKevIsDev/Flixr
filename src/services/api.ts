@@ -222,13 +222,19 @@ export const getSimilarMovies = (movieId: string) =>
 export const getMovieRecommendations = (movieId: string) => 
   fetchTMDB(`/movie/${movieId}/recommendations`);
 
-// Update the video endpoint to better handle TV shows
+// Update the video endpoint to better handle both movies and TV shows
 export const getVideos = async (id: string, mediaType: 'movie' | 'tv') => {
   try {
+    // Add check for valid ID and mediaType
+    if (!id || !mediaType) {
+      console.warn('Missing id or mediaType in getVideos');
+      return [];
+    }
+
     const data = await fetchTMDB(`/${mediaType}/${id}/videos`);
     
-    // Log the raw data to debug
-    console.log('Video API Response:', data);
+    // Debug logging
+    console.log(`Fetching videos for ${mediaType} ${id}:`, data);
 
     if (!data.results || data.results.length === 0) {
       return [];
@@ -245,8 +251,8 @@ export const getVideos = async (id: string, mediaType: 'movie' | 'tv') => {
       new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
     );
   } catch (error) {
-    console.error('Error fetching videos:', error);
-    return [];
+    console.error(`Error fetching videos for ${mediaType} ${id}:`, error);
+    return []; // Return empty array instead of throwing
   }
 };
 
@@ -409,3 +415,30 @@ export const searchMultiContent = async (query: string, page: number = 1) => {
     throw error;
   }
 };
+
+// Add these functions to fetch watch providers
+
+export async function getMovieWatchProviders(movieId: string) {
+  const response = await fetchTMDB(`/movie/${movieId}/watch/providers`);
+  // The API returns results by country, we'll use US results
+  return response.data.results?.US || null;
+}
+
+export async function getShowWatchProviders(showId: string) {
+  const response = await fetchTMDB(`/tv/${showId}/watch/providers`);
+  // The API returns results by country, we'll use US results
+  return response.data.results?.US || null;
+}
+
+// Debug function to help build our streamingUrls mapping
+export async function getAllProviderDetails() {
+  const response = await fetchTMDB('/watch/providers/movie');
+  console.table(
+    response.data.results.map((provider: any) => ({
+      id: provider.provider_id,
+      name: provider.provider_name,
+      logo: provider.logo_path
+    }))
+  );
+  return response.data.results;
+}

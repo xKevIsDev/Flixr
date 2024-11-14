@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ShowCard } from '../components/ShowCard';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { useShows } from '../hooks/useShows';
+import { ShowCardSkeleton } from '../components/Skeletons';
 
 type ShowFilter = 'all' | 'popular' | 'top_rated' | 'on_the_air' | 'airing_today';
 
@@ -18,6 +19,26 @@ export function Shows() {
     { value: 'top_rated', label: 'Top Rated' },
     { value: 'on_the_air', label: 'Currently Airing' },
   ];
+
+  if (loading && page === 1) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex items-center justify-between mb-6">
+          <div className="h-8 bg-zinc-800 rounded w-40 animate-pulse" />
+          <div className="flex gap-2">
+            {filterOptions.map((_, i) => (
+              <div key={i} className="h-10 bg-zinc-800 rounded w-24 animate-pulse" />
+            ))}
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {[...Array(12)].map((_, i) => (
+            <ShowCardSkeleton key={i} />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -67,7 +88,7 @@ export function Shows() {
         <div className="mt-8 text-center">
           <button
             onClick={() => setPage(prev => prev + 1)}
-            className="px-6 py-3 bg-red-600 hover:bg-purple-600 rounded-lg transition-colors"
+            className="px-6 py-3 bg-red-600 hover:bg-white hover:text-black rounded-lg transition-colors"
           >
             Load More Shows
           </button>

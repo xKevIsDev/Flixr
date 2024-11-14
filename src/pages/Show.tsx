@@ -6,6 +6,7 @@ import { getImageUrl } from '../config/api';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { CharacterList } from '../components/CharacterList';
 import { VideoPlayer } from '../components/VideoPlayer';
+import { WatchProviders } from '../components/WatchProviders';
 
 export function Show() {
   const { id } = useParams();
@@ -59,7 +60,7 @@ export function Show() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <Link to="/" className="inline-flex items-center text-red-600 hover:text-purple-400 mb-6">
+      <Link to="/" className="inline-flex items-center text-red-600 hover:text-white mb-6">
         <ArrowLeft className="h-5 w-5 mr-2" />
         Back to Shows
       </Link>
@@ -139,41 +140,7 @@ export function Show() {
           {show.watchProviders && (
             <div className="bg-zinc-900 rounded-xl p-6">
               <h2 className="text-xl font-semibold mb-4">Where to Watch</h2>
-              <div className="space-y-4">
-                {show.watchProviders.flatrate && (
-                  <div>
-                    <h3 className="text-gray-400 text-sm">Stream</h3>
-                    <div className="flex flex-wrap gap-2 mt-1">
-                      {show.watchProviders.flatrate.map((provider: any) => (
-                        <img
-                          key={provider.provider_id}
-                          src={`https://image.tmdb.org/t/p/original${provider.logo_path}`}
-                          alt={provider.provider_name}
-                          title={provider.provider_name}
-                          className="w-10 h-10 rounded-lg"
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-                
-                {show.watchProviders.rent && (
-                  <div>
-                    <h3 className="text-gray-400 text-sm">Rent</h3>
-                    <div className="flex flex-wrap gap-2 mt-1">
-                      {show.watchProviders.rent.map((provider: any) => (
-                        <img
-                          key={provider.provider_id}
-                          src={`https://image.tmdb.org/t/p/original${provider.logo_path}`}
-                          alt={provider.provider_name}
-                          title={provider.provider_name}
-                          className="w-10 h-10 rounded-lg"
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
+              <WatchProviders providers={show.watchProviders} />
             </div>
           )}
 
