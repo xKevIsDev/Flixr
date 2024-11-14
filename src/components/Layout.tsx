@@ -46,7 +46,7 @@ const tvGenres = [
 ];
 
 export function Layout() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showCategories, setShowCategories] = useState(true);
   const [selectedMediaType, setSelectedMediaType] = useState<'movie' | 'tv'>('tv');
 
@@ -67,6 +67,30 @@ export function Layout() {
     verifyGenres();
   }, []);
 
+  // Close sidebar on mobile when clicking outside
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setIsSidebarOpen(false);
+      } else {
+        setIsSidebarOpen(true);
+      }
+    };
+
+    // Set initial state
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Close sidebar when clicking outside on mobile
+  const handleOverlayClick = () => {
+    if (window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-zinc-800 text-white">
       {/* Top Navigation */}
@@ -76,7 +100,7 @@ export function Layout() {
             <div className="flex items-center">
               <button
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                className="p-2 rounded-lg hover:bg-zinc-900"
+                className="p-2 rounded-lg hover:bg-zinc-900 md:hidden"
               >
                 {isSidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </button>
@@ -85,70 +109,74 @@ export function Layout() {
               </Link>
             </div>
             <div className="flex items-center space-x-4">
-            <div className="w-full max-w-md">
+              <div className="w-full max-w-md hidden sm:block">
                 <SearchBar />
               </div>
-              {/* <NavLink to="/watchlist" className={({ isActive }) => 
-                `p-2 rounded-lg transition-colors ${isActive ? 'bg-red-600' : 'hover:bg-zinc-900'}`
-              }>
-                <BookMarked className="h-5 w-5" />
-              </NavLink>
-              {/* <NavLink to="/profile" aria-disabled className={({ isActive }) => 
-                `p-2 rounded-lg transition-colors ${isActive ? 'bg-red-600' : 'hover:bg-zinc-900'}`
-              }>
-                <User className="h-5 w-5" />
-              </NavLink> */}
             </div>
+          </div>
+          {/* Mobile Search Bar */}
+          <div className="pb-3 px-2 sm:hidden">
+            <SearchBar />
           </div>
         </div>
       </nav>
 
-      {/* Sidebar */}
-      <div className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-zinc-900 border-r border-gray-800 transition-all duration-300 z-40 
-        ${isSidebarOpen ? 'w-64' : 'w-0'}`}>
-        <div className="overflow-y-auto h-full">
-          {isSidebarOpen && (
-            <div className="p-4 space-y-6">
+      {/* Overlay for mobile */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
+          onClick={handleOverlayClick}
+        />
+      )}
 
-              {/* Categories */}
-              <div className="space-y-2">
-                <div
-                  className="flex items-center justify-between w-full text-sm font-semibold text-gray-400 uppercase"
-                >
-                  <span>Categories</span>
-                </div>
-                {showCategories && (
-                  <div className="space-y-1">
-                    {genres.map(genre => (
-                      <NavLink
-                        key={genre.id}
-                        to={`/category/${genre.id}?type=${selectedMediaType}`}
-                        className={({ isActive }) =>
-                          `block p-2 rounded-lg transition-colors ${
-                            isActive ? 'bg-red-600' : 'hover:bg-white hover:text-red-600'
-                          }`
-                        }
-                        onClick={() => {
-                          console.log('Selected category:', {
-                            id: genre.id,
-                            name: genre.name,
-                            mediaType: selectedMediaType
-                          });
-                        }}
-                      >
-                        {genre.name}
-                      </NavLink>
-                    ))}
-                  </div>
-                )}
+      {/* Sidebar */}
+      <div 
+        className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-zinc-900 border-r border-gray-800 
+          transition-all duration-300 z-40 overflow-y-auto
+          ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} 
+          w-64 md:w-64`}
+      >
+        <div className="overflow-y-auto h-full">
+          <div className="p-4 space-y-6">
+            {/* Categories */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between w-full text-sm font-semibold text-gray-400 uppercase">
+                <span>Categories</span>
               </div>
+              {showCategories && (
+                <div className="space-y-1">
+                  {genres.map(genre => (
+                    <NavLink
+                      key={genre.id}
+                      to={`/category/${genre.id}?type=${selectedMediaType}`}
+                      className={({ isActive }) =>
+                        `block p-2 rounded-lg transition-colors ${
+                          isActive ? 'bg-red-600' : 'hover:bg-white hover:text-red-600'
+                        }`
+                      }
+                      onClick={() => {
+                        if (window.innerWidth < 768) {
+                          setIsSidebarOpen(false);
+                        }
+                      }}
+                    >
+                      {genre.name}
+                    </NavLink>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <main className={`pt-16 min-h-screen transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-0'}`}>
+      <main 
+        className={`pt-16 min-h-screen transition-all duration-300
+          ${isSidebarOpen ? 'md:ml-64' : 'ml-0'} 
+          ${isSidebarOpen ? 'sm:ml-0 md:ml-64' : 'ml-0'}
+        `}
+      >
         <Outlet />
       </main>
     </div>
