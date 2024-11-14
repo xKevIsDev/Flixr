@@ -94,7 +94,7 @@ export function Layout() {
   return (
     <div className="min-h-screen bg-zinc-800 text-white">
       {/* Top Navigation */}
-      <nav className="fixed top-0 w-full bg-zinc-900 border-b border-gray-800 z-50">
+      <nav className="fixed top-0 w-full bg-zinc-900 border-b border-zinc-800 z-50">
         <div className="max-w-full px-4">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
@@ -131,7 +131,7 @@ export function Layout() {
 
       {/* Sidebar */}
       <div 
-        className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-zinc-900 border-r border-gray-800 
+        className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-zinc-900 border-r border-zinc-800 
           transition-all duration-300 z-40 overflow-y-auto
           ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} 
           w-64 md:w-64`}

@@ -112,7 +112,7 @@ export function Show() {
                   <select
                     value={selectedSeason}
                     onChange={(e) => setSelectedSeason(Number(e.target.value))}
-                    className="bg-gray-700 border border-gray-600 rounded-lg px-3 py-1 text-sm"
+                    className="bg-gray-700 border border-zinc-600 rounded-lg px-3 py-1 text-sm"
                   >
                     {show.seasons.map((season: any) => (
                       <option key={season.season_number} value={season.season_number}>

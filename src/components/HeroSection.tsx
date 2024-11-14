@@ -9,7 +9,6 @@ export function HeroSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
-  // Auto-rotate featured content (only when video isn't playing)
   useEffect(() => {
     if (featured.length === 0 || isVideoPlaying) return;
     
@@ -22,7 +21,7 @@ export function HeroSection() {
 
   if (loading || featured.length === 0) {
     return (
-      <div className="relative h-[50vh] sm:h-[70vh] mb-8 sm:mb-12 bg-zinc-900 animate-pulse">
+      <div className="relative h-[56.25vw] max-h-[80vh] min-h-[400px] mb-8 bg-zinc-900 animate-pulse">
         <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />
         <div className="absolute bottom-0 left-0 p-4 sm:p-8 md:p-16 max-w-3xl space-y-4">
           <div className="h-8 sm:h-12 w-2/3 bg-zinc-800 rounded" />
@@ -44,87 +43,115 @@ export function HeroSection() {
   };
 
   return (
-    <div className="relative h-[50vh] sm:h-[70vh] mb-8 sm:mb-12 group">
-      {/* Background Content */}
+    <div className="relative h-[56.25vw] max-h-[80vh] min-h-[400px] mb-8 group overflow-hidden">
+      {/* Background Image/Video Container */}
       <div className="absolute inset-0">
         {isVideoPlaying && trailer ? (
-          <iframe
-            src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=1&controls=0&loop=1`}
-            className="w-full h-full"
-            allow="autoplay"
-          />
+          <div className="relative w-full h-full">
+            {/* Background Image (shown while video loads) */}
+            <img
+              src={`https://image.tmdb.org/t/p/original${currentItem.backdrop_path}`}
+              alt=""
+              className="w-full h-full object-cover"
+            />
+            
+            {/* Video Container with Netflix-style positioning */}
+            <div className="absolute inset-0 flex items-center">
+              <div className="relative w-[70%] h-full ml-auto overflow-hidden">
+                {/* Custom video container with edge gradients */}
+                <div className="absolute inset-0">
+                  <div className="relative w-full h-full">
+                    <iframe
+                      src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=1&controls=0&loop=1&playlist=${trailer.key}&modestbranding=1&showinfo=0&rel=0&iv_load_policy=3`}
+                      className="w-[130%] h-[130%] absolute -top-[15%] -left-[15%] pointer-events-none"
+                      allow="autoplay"
+                      title="trailer"
+                    />
+                  </div>
+                  {/* Edge gradients */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-zinc-900 via-transparent to-transparent w-1/3" />
+                  <div className="absolute inset-0 bg-gradient-to-l from-zinc-900 via-transparent to-transparent w-1/4 ml-auto" />
+                  <div className="absolute inset-0 bg-gradient-to-b from-zinc-900/30 via-transparent to-zinc-900/30" />
+                </div>
+              </div>
+            </div>
+          </div>
         ) : (
           <img
             src={`https://image.tmdb.org/t/p/original${currentItem.backdrop_path}`}
             alt={currentItem.title || currentItem.name}
-            className="w-full h-full object-cover object-top"
+            className="w-full h-full object-cover"
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black to-transparent" />
+        
+        {/* Base gradients for content visibility */}
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/60 to-zinc-900/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-zinc-900 via-zinc-900/90 to-transparent" />
       </div>
 
       {/* Content */}
-      <div className="absolute bottom-0 left-0 p-4 sm:p-8 md:px-20 md:py-1 max-w-3xl">
-        <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold mb-2 sm:mb-4">
-          {currentItem.title || currentItem.name}
-        </h1>
-        <p className="text-sm sm:text-base md:text-lg text-gray-200 mb-0 sm:mb-6 
-                     line-clamp-2 sm:line-clamp-3">
-          {currentItem.overview}
-        </p>
-        
-        {/* Buttons and Info */}
-        <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-          {trailer && (
-            <button
-              onClick={() => setIsVideoPlaying(!isVideoPlaying)}
+      <div className="absolute inset-0 flex flex-col justify-center">
+        <div className="px-4 sm:px-8 md:px-20 w-[45%] relative z-10">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">
+            {currentItem.title || currentItem.name}
+          </h1>
+          <p className="text-sm sm:text-base md:text-lg text-gray-200 mb-4 sm:mb-6 
+                       line-clamp-3 sm:line-clamp-4">
+            {currentItem.overview}
+          </p>
+          
+          {/* Buttons and Info */}
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+            {trailer && (
+              <button
+                onClick={() => setIsVideoPlaying(!isVideoPlaying)}
+                className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 
+                         bg-red-600 hover:bg-red-700 transition-colors 
+                         rounded-lg text-white text-sm sm:text-base font-semibold"
+              >
+                {isVideoPlaying ? (
+                  <>
+                    <StopCircleIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
+                    Stop Trailer
+                  </>
+                ) : (
+                  <>
+                    <PlayIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
+                    Play Trailer
+                  </>
+                )}
+              </button>
+            )}
+            
+            <Link
+              to={getDetailsLink(currentItem)}
               className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 
-                       bg-red-600 hover:bg-red-700 transition-colors 
+                       bg-gray-800/80 hover:bg-gray-700/80 transition-colors 
                        rounded-lg text-white text-sm sm:text-base font-semibold"
             >
-              {isVideoPlaying ? (
-                <>
-                  <StopCircleIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
-                  Stop Trailer
-                </>
-              ) : (
-                <>
-                  <PlayIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
-                  Play Trailer
-                </>
-              )}
-            </button>
+              <InfoIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
+              Details
+            </Link>
+
+            <div className="flex items-center gap-2">
+              <span className="text-yellow-400">★</span>
+              <span className="font-semibold text-sm sm:text-base">
+                {currentItem.vote_average.toFixed(1)}
+              </span>
+            </div>
+          </div>
+
+          {/* Streaming Providers */}
+          {currentItem.watchProviders && (
+            <div className="flex items-center gap-3">
+              <WatchProviders 
+                providers={currentItem.watchProviders} 
+                compact={true}
+                maxProviders={4}
+              />
+            </div>
           )}
-          
-          <Link
-            to={getDetailsLink(currentItem)}
-            className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 
-                     bg-gray-800/80 hover:bg-gray-700/80 transition-colors 
-                     rounded-lg text-white text-sm sm:text-base font-semibold"
-          >
-            <InfoIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
-            Details
-          </Link>
-
-          <div className="flex items-center gap-2">
-            <span className="text-yellow-400">★</span>
-            <span className="font-semibold text-sm sm:text-base">
-              {currentItem.vote_average.toFixed(1)}
-            </span>
-          </div>
         </div>
-
-        {/* Streaming Providers */}
-        {currentItem.watchProviders && (
-          <div className="flex items-center gap-3">
-            <WatchProviders 
-              providers={currentItem.watchProviders} 
-              compact={true}
-              maxProviders={4}
-            />
-          </div>
-        )}
       </div>
 
       {/* Navigation Dots */}
