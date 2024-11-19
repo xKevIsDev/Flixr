@@ -433,6 +433,101 @@ export async function getShowWatchProviders(showId: string) {
   return response.results?.US || null;
 }
 
+interface TMDBSearchParams {
+  keywords: string[];
+  type?: 'movie' | 'tv' | 'all';
+  year?: number | undefined;
+  genres?: number[];
+  minRating?: number;
+}
+
+// Add this interface for the search parameters
+interface SmartSearchParams {
+  keywords: string[];
+  type?: 'movie' | 'tv' | 'all';
+  year?: number;
+  minRating?: number;
+}
+
+export const getSmartRecommendations = async ({ 
+  keywords, 
+  type = 'all', 
+  year,
+  minRating = 6.0 
+}: SmartSearchParams) => {
+  try {
+    // Start with a search for each keyword
+    const searchPromises = keywords.map(keyword => 
+      fetchTMDB('/search/multi', {
+        query: keyword,
+        include_adult: 'false',
+        language: 'en-US',
+        year: year?.toString() || ''
+      })
+    );
+
+    const searchResults = await Promise.all(searchPromises);
+    
+    // Combine and filter results
+    let combinedResults = searchResults.flatMap(result => result.results || [])
+      .filter(item => {
+        // Filter by media type if specified
+        if (type !== 'all' && item.media_type !== type) return false;
+        
+        // Filter by minimum rating
+        const rating = item.vote_average || 0;
+        if (rating < minRating) return false;
+        
+        // Filter by year if specified
+        if (year) {
+          const itemYear = new Date(
+            item.release_date || item.first_air_date || ''
+          ).getFullYear();
+          if (itemYear !== year) return false;
+        }
+        
+        return true;
+      });
+
+    // Remove duplicates
+    combinedResults = [...new Map(
+      combinedResults.map(item => [item.id, item])
+    ).values()];
+
+    // Enrich top 5 results with details and watch providers
+    const enrichedResults = await Promise.all(
+      combinedResults.slice(0, 5).map(async (item) => {
+        try {
+          const [details, watchProviders] = await Promise.all([
+            item.media_type === 'movie' 
+              ? getMovieDetails(item.id.toString())
+              : getShowDetails(item.id.toString()),
+            getWatchProviders(item.id.toString(), item.media_type)
+          ]);
+
+          return {
+            ...item,
+            ...details,
+            watchProviders,
+            details: {
+              rating: details.vote_average || item.vote_average || 0,
+              runtime: details.runtime || (details.episode_run_time?.[0] || 0)
+            }
+          };
+        } catch (error) {
+          console.error(`Error enriching item ${item.id}:`, error);
+          return item;
+        }
+      })
+    );
+
+    return enrichedResults;
+  } catch (error) {
+    console.error('Error in getSmartRecommendations:', error);
+    return [];
+  }
+};
+
 // Debug function to help build our streamingUrls mapping
 export async function getAllProviderDetails() {
   try {
