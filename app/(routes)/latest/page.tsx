@@ -5,7 +5,7 @@ import { ShowCard } from '@/components/ShowCard';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { useLatest } from '@/hooks/useLatest';
 
-export function Latest() {
+export default function Latest() {
   const [mediaType, setMediaType] = useState<'tv' | 'movie'>('tv');
   const { shows, loading, error } = useLatest(mediaType);
 
