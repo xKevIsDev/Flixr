@@ -5,7 +5,7 @@ import { ShowCard } from '@/components/ShowCard';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { useShows } from '@/hooks/useShows';
 
-export function Trending() {
+export default function Trending() {
   const [mediaType, setMediaType] = useState<'tv' | 'movie'>('tv');
   const { shows, loading, error } = useShows(mediaType);
 

@@ -11,6 +11,7 @@ import { VideoPlayer } from '@/components/VideoPlayer';
 import { WatchProviders } from '@/components/WatchProviders';
 import { ShowDetailsSkeleton } from '@/components/Skeletons';
 import Image from 'next/image';
+
 export default function ShowPage() {
   const params = useParams();
   const showId = params.id as string;

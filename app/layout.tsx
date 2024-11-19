@@ -2,6 +2,7 @@ import ClientLayout from '@/components/ClientLayout'
 import type { Metadata } from 'next'
 import "./globals.css"
 import Script from 'next/script'
+import { Analytics } from '@vercel/analytics/react'
 
 export const metadata: Metadata = {
   title: 'Flixr',
@@ -20,6 +21,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <ClientLayout>{children}</ClientLayout>
+        <Analytics />
       </body>
     </html>
   );

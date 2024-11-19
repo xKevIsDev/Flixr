@@ -5,7 +5,7 @@ import { ShowCard } from '@/components/ShowCard';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { useTopRated } from '@/hooks/useTopRated';
 
-export function TopRated() {
+export default function TopRated() {
   const [mediaType, setMediaType] = useState<'tv' | 'movie'>('tv');
   const { shows, loading, error } = useTopRated(mediaType);
 
