@@ -1,9 +1,6 @@
 import { TMDB_API_KEY, TMDB_BASE_URL } from '../config/api';
 import { movieGenres, tvGenres } from '../constants/genres';
 
-type FetchParams = Record<string, string>;
-type TMDBResponse<T> = Promise<T>; // Generic for TMDB responses
-
 // Helper function to fetch from TMDB with enhanced error handling
 const fetchTMDB = async (endpoint: string, params: Record<string, string> = {}) => {
   const apiKey = TMDB_API_KEY || '';

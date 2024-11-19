@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Play, Star } from 'lucide-react';
 import { getImageUrl } from '../config/api';
 import { WatchProviders } from '../components/WatchProviders';
+import Image from 'next/image';
 
 interface ShowCardProps {
   id: number;
@@ -56,9 +57,11 @@ export function ShowCard({
     <div className="bg-zinc-900 rounded-xl overflow-hidden group">
       <div className="relative">
         <Link href={linkPath}>
-          <img 
-            src={getImageUrl(posterPath) || ''}
-            alt={displayName}
+          <Image 
+            src={getImageUrl(posterPath) || 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/800px-No-Image-Placeholder.svg.png'}
+            alt={displayName || 'No Image Available'}
+            width={1920}
+            height={1080}
             className="w-full h-64 object-cover transition-transform group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
