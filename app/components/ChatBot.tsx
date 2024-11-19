@@ -173,79 +173,105 @@ export function ChatBot() {
 
   return (
     <>
+      {/* Chat Button - Adjust size and position for mobile */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 bg-red-600 p-4 rounded-full shadow-lg hover:bg-red-700 transition-colors"
+        className="fixed bottom-4 right-4 md:bottom-6 md:right-6 bg-red-600 p-3 md:p-4 rounded-full shadow-lg hover:bg-red-700 transition-colors z-50"
       >
-        <MessageSquare className="h-6 w-6" />
+        <MessageSquare className="h-5 w-5 md:h-6 md:w-6" />
       </button>
 
       {isOpen && (
-        <div className="fixed bottom-24 right-6 w-96 bg-zinc-900 rounded-xl shadow-xl border border-zinc-800 z-20">
-          <div className="flex items-center justify-between p-4 border-b border-zinc-800">
-            <h3 className="font-semibold flex items-center"><BotMessageSquare className="h-5 w-5 mr-2 text-red-600" /> Flixr AI</h3>
-            <button onClick={() => setIsOpen(false)}>
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-
-          <div className="h-96 overflow-y-auto p-4 space-y-4">
-            {messages.slice(1).map((message, i) => (
-              <div key={i} className="space-y-3">
-                <div className={`flex ${
-                  message.role === 'user' ? 'justify-end' : 'justify-start'
-                }`}>
-                  <div className={`max-w-[80%] rounded-lg p-3 ${
-                    message.role === 'user'
-                      ? 'bg-red-600'
-                      : 'bg-zinc-800'
-                  }`}>
-                    {message.content}
-                  </div>
-                </div>
-                
-                {message.recommendations && (
-                  <div className="space-y-2">
-                    {message.recommendations.map((item) => (
-                      <RecommendationCard key={item.id} item={item} />
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-            {loading && (
-              <div className="flex justify-start">
-                <div className="bg-zinc-800 rounded-lg p-3">
-                  <div className="flex space-x-2">
-                    <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" />
-                    <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce delay-100" />
-                    <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce delay-200" />
-                  </div>
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-
-          <form onSubmit={handleSubmit} className="p-4 border-t border-zinc-800">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask for recommendations..."
-                className="flex-1 bg-zinc-800 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-600"
-              />
-              <button
-                type="submit"
-                disabled={loading}
-                className="bg-red-600 p-2 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
+        <>
+          {/* Overlay for mobile */}
+          <div 
+            className="fixed inset-0 bg-black/50 z-40 md:hidden"
+            onClick={() => setIsOpen(false)}
+          />
+          
+          {/* Chat Window - Make it full screen on mobile */}
+          <div className="fixed inset-0 md:inset-auto md:bottom-24 md:right-6 
+                        w-full md:w-96 bg-zinc-900 
+                        md:rounded-xl shadow-xl border border-zinc-800 
+                        flex flex-col z-50">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-zinc-800">
+              <h3 className="font-semibold flex items-center">
+                <BotMessageSquare className="h-5 w-5 mr-2 text-red-600" /> 
+                Flixr AI
+              </h3>
+              <button 
+                onClick={() => setIsOpen(false)}
+                className="p-1 hover:bg-zinc-800 rounded-lg transition-colors"
               >
-                <Send className="h-5 w-5" />
+                <X className="h-5 w-5" />
               </button>
             </div>
-          </form>
-        </div>
+
+            {/* Messages Container - Use flex-grow to fill space */}
+            <div className="flex-grow overflow-y-auto p-4 space-y-4">
+              {messages.slice(1).map((message, i) => (
+                <div key={i} className="space-y-3">
+                  <div className={`flex ${
+                    message.role === 'user' ? 'justify-end' : 'justify-start'
+                  }`}>
+                    <div className={`max-w-[85%] rounded-lg p-3 ${
+                      message.role === 'user'
+                        ? 'bg-red-600'
+                        : 'bg-zinc-800'
+                    }`}>
+                      {message.content}
+                    </div>
+                  </div>
+                  
+                  {message.recommendations && (
+                    <div className="space-y-2">
+                      {message.recommendations.map((item) => (
+                        <RecommendationCard key={item.id} item={item} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+              {loading && (
+                <div className="flex justify-start">
+                  <div className="bg-zinc-800 rounded-lg p-3">
+                    <div className="flex space-x-2">
+                      <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" />
+                      <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce delay-100" />
+                      <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce delay-200" />
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input Form - Stick to bottom */}
+            <form onSubmit={handleSubmit} className="p-4 border-t border-zinc-800">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Ask for recommendations..."
+                  className="flex-1 bg-zinc-800 rounded-lg px-4 py-2 
+                           focus:outline-none focus:ring-2 focus:ring-red-600
+                           text-sm md:text-base"
+                />
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="bg-red-600 p-2 rounded-lg hover:bg-red-700 
+                           transition-colors disabled:opacity-50
+                           flex-shrink-0"
+                >
+                  <Send className="h-5 w-5" />
+                </button>
+              </div>
+            </form>
+          </div>
+        </>
       )}
     </>
   );
