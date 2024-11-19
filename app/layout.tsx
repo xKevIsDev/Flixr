@@ -5,7 +5,10 @@ import Script from 'next/script'
 
 export const metadata: Metadata = {
   title: 'Flixr',
-  description: 'Discover movies and TV shows'
+  description: 'Discover movies and TV shows',
+  other: {
+    'google-adsense-account': 'ca-pub-3407380400679075'
+  }
 }
 
 export default function RootLayout({
@@ -15,11 +18,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-      <Script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3407380400679075"
-        crossOrigin="anonymous">
-      </Script>
-      </head>
       <body>
         <ClientLayout>{children}</ClientLayout>
       </body>
