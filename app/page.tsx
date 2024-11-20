@@ -40,7 +40,7 @@ export default function HomePage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent 
                               group-hover:from-black/95 group-hover:via-black/60 transition-all duration-300" />
                 <Image
-                  src={`https://image.tmdb.org/t/p/w780${category.backdropPath}`}
+                  src={`https://image.tmdb.org/t/p/w780${category.backdropPath}` || 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/800px-No-Image-Placeholder.svg.png'}
                   alt={category.name}
                   width={1920}
                   height={1080}

@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, BotMessageSquare } from 'lucide-react';
-import { getSmartRecommendations } from '@/services/api';
 import Image from 'next/image';
 import { getImageUrl } from '@/config/api';
 import { RecommendationCard } from './RecommendationCard';
@@ -28,74 +27,6 @@ export function ChatBot() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const processAIResponse = async (response: string) => {
-    console.log('Raw AI response:', response);
-    const parts = response.split('---');
-    const explanation = parts[0].trim();
-    const keywordString = parts[1]?.trim();
-    
-    try {
-      // Extract movie/show titles from the explanation
-      const titleRegex = /"([^"]+)"/g;
-      const titles = [...explanation.matchAll(titleRegex)].map(match => match[1]);
-      console.log('Extracted titles:', titles);
-  
-      // Extract keywords
-      const keywords = keywordString
-        ? keywordString.split(',').map(k => k.trim()).filter(k => k.length > 0)
-        : [];
-  
-      console.log('Keywords for search:', keywords);
-  
-      // Try to get recommendations for each mentioned title first
-      let recommendations = [];
-      
-      for (const title of titles) {
-        const titleRecs = await getSmartRecommendations({
-          keywords: [title], // Search by exact title
-          type: 'all',      // Don't restrict media type initially
-          minRating: 6.0
-        });
-        
-        if (titleRecs.length > 0) {
-          recommendations.push(...titleRecs);
-        }
-      }
-  
-      // If no recommendations found by titles, try keywords
-      if (recommendations.length === 0) {
-        console.log('No recommendations found by titles, trying keywords...');
-        
-        // Try with individual keywords
-        for (const keyword of keywords.slice(0, 3)) { // Use first 3 keywords
-          const keywordRecs = await getSmartRecommendations({
-            keywords: [keyword],
-            type: 'all',
-            minRating: 6.0
-          });
-          
-          if (keywordRecs.length > 0) {
-            recommendations.push(...keywordRecs);
-          }
-        }
-      }
-  
-      // Remove duplicates and limit to 5 recommendations
-      recommendations = [...new Map(recommendations.map(item => [item.id, item])).values()];
-      recommendations = recommendations.slice(0, 5);
-  
-      console.log('Final recommendations:', recommendations);
-  
-      return {
-        explanation,
-        recommendations: recommendations.length > 0 ? recommendations : undefined
-      };
-    } catch (error) {
-      console.error('Error getting recommendations:', error);
-      return explanation;
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || loading) return;
@@ -116,48 +47,59 @@ export function ChatBot() {
         throw new Error('Stream error');
       }
   
-      // Create a new assistant message for streaming
-      const assistantMessage = { role: 'assistant' as const, content: '' };
-      setMessages(prev => [...prev, assistantMessage]);
-  
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      let fullResponse = '';
+      let buffer = '';
   
-      // Read the stream
+      // Create placeholder message
+      setMessages(prev => [...prev, { 
+        role: 'assistant',
+        content: '',
+        recommendations: []
+      }]);
+  
       while (true) {
         const { done, value } = await reader.read();
-        if (done) break;
         
-        const chunk = decoder.decode(value);
-        fullResponse += chunk;
-        
-        setMessages(prev => {
-          const lastMessage = prev[prev.length - 1];
-          return [
-            ...prev.slice(0, -1),
-            { ...lastMessage, content: fullResponse }
-          ];
-        });
-      }
-  
-      // Process the complete response
-      const processedResponse = await processAIResponse(fullResponse);
-      
-      if (typeof processedResponse === 'string') {
-        setMessages(prev => [
-          ...prev.slice(0, -1),
-          { role: 'assistant', content: processedResponse }
-        ]);
-      } else {
-        setMessages(prev => [
-          ...prev.slice(0, -1),
-          { 
-            role: 'assistant', 
-            content: processedResponse.explanation,
-            recommendations: processedResponse.recommendations 
+        if (done) {
+          // Parse the complete buffer if anything remains
+          if (buffer) {
+            try {
+              const finalResponse = JSON.parse(buffer);
+              setMessages(prev => [
+                ...prev.slice(0, -1),
+                { 
+                  role: 'assistant',
+                  content: finalResponse.explanation,
+                  recommendations: finalResponse.recommendations
+                }
+              ]);
+            } catch (e) {
+              console.error('Error parsing final buffer:', e);
+            }
           }
-        ]);
+          break;
+        }
+  
+        // Append new chunk to buffer
+        buffer += decoder.decode(value, { stream: true });
+  
+        // Try to parse complete JSON objects from buffer
+        try {
+          const parsedResponse = JSON.parse(buffer);
+          setMessages(prev => [
+            ...prev.slice(0, -1),
+            { 
+              role: 'assistant',
+              content: parsedResponse.explanation,
+              recommendations: parsedResponse.recommendations
+            }
+          ]);
+          buffer = ''; // Clear buffer after successful parse
+        } catch (e) {
+          // Incomplete JSON, continue buffering
+          continue;
+        }
       }
   
     } catch (error) {
@@ -189,11 +131,12 @@ export function ChatBot() {
             onClick={() => setIsOpen(false)}
           />
           
-          {/* Chat Window - Make it full screen on mobile */}
+          {/* Chat Window - Update height classes */}
           <div className="fixed inset-0 md:inset-auto md:bottom-24 md:right-6 
                         w-full md:w-96 bg-zinc-900 
                         md:rounded-xl shadow-xl border border-zinc-800 
-                        flex flex-col z-50">
+                        flex flex-col z-50
+                        md:h-[600px]">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-zinc-800">
               <h3 className="font-semibold flex items-center">
@@ -208,10 +151,10 @@ export function ChatBot() {
               </button>
             </div>
 
-            {/* Messages Container - Use flex-grow to fill space */}
-            <div className="flex-grow overflow-y-auto p-4 space-y-4">
+            {/* Messages Container - Update scrolling classes */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
               {messages.slice(1).map((message, i) => (
-                <div key={i} className="space-y-3">
+                <div key={i} className="space-y-4">
                   <div className={`flex ${
                     message.role === 'user' ? 'justify-end' : 'justify-start'
                   }`}>
@@ -225,7 +168,7 @@ export function ChatBot() {
                   </div>
                   
                   {message.recommendations && (
-                    <div className="space-y-2">
+                    <div className="grid gap-3">
                       {message.recommendations.map((item) => (
                         <RecommendationCard key={item.id} item={item} />
                       ))}

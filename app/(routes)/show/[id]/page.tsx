@@ -74,7 +74,7 @@ export default function ShowPage() {
           <div className="bg-zinc-900 rounded-xl overflow-hidden">
             <div className="relative h-96">
               <Image
-                src={getImageUrl(show.backdrop_path, 'original') || ''}
+                src={getImageUrl(show.backdrop_path, 'original') || 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/800px-No-Image-Placeholder.svg.png'}
                 alt={show.name}
                 width={1920}
                 height={1080}
@@ -171,7 +171,7 @@ export default function ShowPage() {
                   {show.networks?.map((network: any) => (
                     <Image
                       key={network.id}
-                      src={getImageUrl(network.logo_path, 'w92') || ''}
+                      src={getImageUrl(network.logo_path, 'w92') || 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/800px-No-Image-Placeholder.svg.png'}
                       alt={network.name}
                       width={1920}
                       height={1080}
