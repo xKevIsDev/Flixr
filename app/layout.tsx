@@ -37,14 +37,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: '/favicon.ico',
-    shortcut: '/favicon-16x16.png',
-    apple: '/apple-touch-icon.png',
-    other: {
-      rel: 'apple-touch-icon-precomposed',
-      url: '/apple-touch-icon-precomposed.png',
-    },
   },
-  manifest: '/site.webmanifest',
   other: {
     'google-adsense-account': 'ca-pub-3407380400679075',
   }
