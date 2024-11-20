@@ -35,18 +35,25 @@ export const getTopRatedMovies = () => fetchTMDB('/movie/top_rated');
 // Show Details and Character Progress Tracking
 export const getShowDetails = async (showId: string) => {
   try {
-    const [details, credits, videos, watchProviders] = await Promise.all([
+    const [details, credits, videos, watchProviders, externalIds] = await Promise.all([
       fetchTMDB(`/tv/${showId}`),
       fetchTMDB(`/tv/${showId}/credits`),
       fetchTMDB(`/tv/${showId}/videos`),
-      fetchTMDB(`/tv/${showId}/watch/providers`)
+      fetchTMDB(`/tv/${showId}/watch/providers`),
+      fetchTMDB(`/tv/${showId}/external_ids`)
     ]);
 
     return {
       ...details,
       credits,
       videos: videos.results,
-      watchProviders: watchProviders.results?.US || null
+      watchProviders: watchProviders.results?.US || null,
+      external_ids: {
+        netflix_id: externalIds.netflix_id,
+        disney_id: externalIds.disney_id,
+        prime_id: externalIds.prime_id,
+        // Add other streaming service IDs
+      }
     };
   } catch (error) {
     console.error('Error fetching show details:', error);
@@ -423,14 +430,26 @@ export const searchMultiContent = async (query: string, page: number = 1) => {
 
 export async function getMovieWatchProviders(movieId: string) {
   const response = await fetchTMDB(`/movie/${movieId}/watch/providers`);
-  // Remove .data since the response is already parsed
-  return response.results?.US || null;
+  const providers = response.results?.US || null;
+  
+  // Include the JustWatch link if available
+  if (providers) {
+    providers.link = response.results?.US?.link || null;
+  }
+  
+  return providers;
 }
 
 export async function getShowWatchProviders(showId: string) {
   const response = await fetchTMDB(`/tv/${showId}/watch/providers`);
-  // Remove .data since the response is already parsed
-  return response.results?.US || null;
+  const providers = response.results?.US || null;
+  
+  // Include the JustWatch link if available
+  if (providers) {
+    providers.link = response.results?.US?.link || null;
+  }
+  
+  return providers;
 }
 
 interface TMDBSearchParams {

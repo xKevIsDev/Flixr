@@ -139,17 +139,6 @@ export function HeroSection() {
             </span>
           </div>
         </div>
-
-        {/* Streaming Providers */}
-        {currentItem.watchProviders && (
-          <div className="flex items-center gap-3">
-            <WatchProviders 
-              providers={currentItem.watchProviders} 
-              compact={true}
-              maxProviders={4}
-            />
-          </div>
-        )}
       </div>
 
       {/* Navigation Dots */}

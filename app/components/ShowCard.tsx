@@ -79,20 +79,6 @@ export function ShowCard({
             </div>
           </div>
         </Link>
-        
-        {/* Watch Providers outside of Link but still in overlay */}
-        {watchProviders && (
-          <div className="absolute bottom-4 right-4 right-4 mt-auto">
-            <div className="scale-90 origin-left">
-              <WatchProviders 
-                providers={watchProviders} 
-                compact={true}
-                maxProviders={3}
-                isStandalone={false}
-              />
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

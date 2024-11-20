@@ -146,7 +146,11 @@ export default function ShowPage() {
           {show.watchProviders && (
             <div className="bg-zinc-900 rounded-xl p-6">
               <h2 className="text-xl font-semibold mb-4">Where to Watch</h2>
-              <WatchProviders providers={show.watchProviders} />
+              <WatchProviders 
+                providers={show.watchProviders}
+                compact={false}
+                maxProviders={4}
+              />
             </div>
           )}
 
