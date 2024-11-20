@@ -36,8 +36,8 @@ interface RecommendationCardProps {
 
 export function RecommendationCard({ item }: RecommendationCardProps) {
   const title = item.title || item.name;
-  const posterPath = item.posterPath || "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/800px-No-Image-Placeholder.svg.png";
-  const imageUrl = getImageUrl(posterPath, 'w185');
+  const posterPath = item.posterPath || item.poster_path || null;
+  const imageUrl = posterPath ? getImageUrl(posterPath, 'w185') : 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/800px-No-Image-Placeholder.svg.png';
   
   // Determine the correct route based on media type
   const href = `/${item.media_type === 'tv' ? 'show' : 'movie'}/${item.id}`;
