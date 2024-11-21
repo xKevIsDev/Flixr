@@ -7,7 +7,7 @@ import {
   Menu, X
 } from 'lucide-react';
 import { SearchBar } from '@/components/SearchBar';
-import { ChatBot } from './ChatBot';
+import ChatBot from './ChatBot';
 
 const movieGenres = [
   { id: 28, name: 'Action' },

@@ -5,27 +5,8 @@ const together = new Together({
   apiKey: process.env.TOGETHER_API_KEY ?? "",
 });
 
-interface StreamChoice {
-  delta?: {
-    content?: string;
-  };
-  text?: string;
-  index: number;
-  finish_reason: string | null;
-}
-
-interface StreamResponse {
-  id: string;
-  choices: StreamChoice[];
-  created: number;
-  model: string;
-}
-
 const SYSTEM_PROMPT = `You are a helpful movie and TV show recommendation assistant. 
 You MUST respond in this EXACT format, with no deviations:
-
-EXPLANATION
-[Your explanation text here]
 
 ---RECOMMENDATIONS---
 1. TITLE: [Movie/Show Title]
@@ -37,16 +18,13 @@ EXPLANATION
 [keyword1, keyword2, keyword3, etc.]
 
 IMPORTANT RULES:
-- Always include exactly these three sections with the exact headers
+- Always include exactly these two sections with the exact headers
 - Always use line breaks between sections
 - Always number recommendations starting from 1
 - Always include TYPE, YEAR, and REASON for each recommendation
 - Never deviate from this format
 
 Example response:
-EXPLANATION
-Based on your interest in science fiction and mind-bending narratives, here are some recommendations.
-
 ---RECOMMENDATIONS---
 1. TITLE: Inception
    TYPE: Movie
@@ -56,7 +34,14 @@ Based on your interest in science fiction and mind-bending narratives, here are 
 ---KEYWORDS---
 psychological, thriller, sci-fi, mind-bending, complex, dreams`
 
-async function processAIResponse(response: string) {
+// Add interface for the processed response
+interface ProcessedResponse {
+  explanation: string;
+  recommendations?: any[];
+  status?: 'processing' | 'complete' | 'error';
+}
+
+async function processAIResponse(response: string): Promise<ProcessedResponse> {
   try {
     // Clean up the response
     const cleanResponse = response.trim();
@@ -147,66 +132,97 @@ async function processAIResponse(response: string) {
 
     return {
       explanation,
-      recommendations: finalRecs.length > 0 ? finalRecs : undefined
+      recommendations: finalRecs.length > 0 ? finalRecs : undefined,
+      status: 'complete'
     };
   } catch (error) {
     console.error('Error processing AI response:', error);
     return {
       explanation: response,
-      recommendations: undefined
+      recommendations: undefined,
+      status: 'error'
     };
   }
 }
 
+export const runtime = 'edge';
+export const maxDuration = 300;
+
+// Add type definitions for Together AI responses
+interface TogetherCompletion {
+  choices: {
+    message?: {
+      content: string;
+    };
+    index: number;
+    finish_reason: string | null;
+  }[];
+  id: string;
+  created: number;
+  model: string;
+}
+
 export async function POST(request: Request) {
+  const encoder = new TextEncoder();
+  
   try {
     const { messages } = await request.json();
     
     const augmentedMessages = [
       { role: 'system', content: SYSTEM_PROMPT },
-      ...messages
+      ...messages.filter((msg: { role: string; }) => msg.role === 'user').map((msg: { content: any; }) => ({
+        role: 'user',
+        content: msg.content
+      }))
     ];
-    
-    // Get the complete AI response first
-    const completion = await together.chat.completions.create({
+
+    const stream = await together.chat.completions.create({
       model: "meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo",
       messages: augmentedMessages,
       temperature: 0.7,
-      stream: false,
+      stream: true,
       max_tokens: 800
     });
 
-    const aiResponse = completion.choices[0]?.message?.content || '';
-    
-    // Process the response
-    const processedResponse = await processAIResponse(aiResponse);
-
-    // Create a stream of the processed response
-    const encoder = new TextEncoder();
-    const readableStream = new ReadableStream({
-      async start(controller) {
-        try {
-          // Stream the processed response as JSON
-          const jsonResponse = JSON.stringify(processedResponse);
-          controller.enqueue(encoder.encode(jsonResponse));
-          controller.close();
-        } catch (error) {
-          console.error('Streaming error:', error);
-          controller.error(error);
+    return new Response(
+      new ReadableStream({
+        async start(controller) {
+          let buffer = '';
+          
+          try {
+            for await (const chunk of stream) {
+              const content = chunk.choices[0]?.delta?.content || '';
+              buffer += content;
+              
+              // If we have the complete response
+              if (buffer.includes('---KEYWORDS---')) {
+                controller.enqueue(encoder.encode(JSON.stringify({
+                  type: 'complete',
+                  content: buffer
+                }) + '\n'));
+                controller.close();
+                break;
+              }
+            }
+          } catch (error) {
+            controller.error(error);
+          }
+        }
+      }),
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive'
         }
       }
-    });
-
-    return new Response(readableStream, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive'
-      }
-    });
+    );
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('Chat API Error:', error);
-    return new Response('Error processing chat request', { status: 500 });
+    return new Response(
+      JSON.stringify({ error: error.message }), 
+      { status: 500 }
+    );
   }
 }
