@@ -74,15 +74,16 @@ export function WatchProviders({
       {/* Only show JustWatch attribution if we have a link and it's standalone */}
       {isStandalone && justWatchLink && (
         <div className="text-xs text-gray-400 mt-2">
+          <p>Find official streaming options:</p>
           <a 
             href={justWatchLink}
             target="_blank"
             rel="noopener noreferrer"
             className="text-red-500 hover:text-red-400"
           >
-            View all watching options on JustWatch →
+            View legal watching options on JustWatch →
           </a>
-          <p className="mt-1">Powered by JustWatch</p>
+          <p className="mt-1">Streaming availability powered by JustWatch</p>
         </div>
       )}
     </div>

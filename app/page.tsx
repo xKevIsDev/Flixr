@@ -17,6 +17,34 @@ export default function HomePage() {
     <div className="min-h-screen">
       <HeroSection />
       
+      <div className="max-w-7xl mx-auto px-4 mb-8">
+        <div className="bg-gradient-to-r from-zinc-900/90 to-zinc-800/50 backdrop-blur-sm border border-zinc-800/50 rounded-xl p-6 sm:p-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-left">
+              <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                Your Movie & TV Show Guide
+              </h2>
+              <p className="mt-2 text-gray-400 text-sm sm:text-base max-w-2xl">
+                Discover detailed information about movies and TV shows, including ratings, cast, trailers, and where to watch them legally. 
+                <span className="text-xs text-gray-500 ml-1">
+                  Powered by <a href="https://www.themoviedb.org" className="text-red-500 hover:text-red-400 transition-colors" target="_blank" rel="noopener noreferrer">TMDB</a>
+                </span>
+              </p>
+            </div>
+            <div className="flex items-center gap-3 text-gray-400">
+              <div className="flex flex-col items-center px-4 py-2 bg-zinc-800/50 rounded-lg">
+                <span className="text-2xl font-bold text-white">10K+</span>
+                <span className="text-xs">Movies</span>
+              </div>
+              <div className="flex flex-col items-center px-4 py-2 bg-zinc-800/50 rounded-lg">
+                <span className="text-2xl font-bold text-white">5K+</span>
+                <span className="text-xs">TV Shows</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
       <div className="max-w-7xl mx-auto space-y-8 sm:space-y-12 px-4">
         <section>
           <SectionHeader title="Trending Shows" viewAllLink="/shows" />
