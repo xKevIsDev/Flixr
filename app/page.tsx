@@ -30,6 +30,9 @@ export default function HomePage() {
                   Powered by <a href="https://www.themoviedb.org" className="text-red-500 hover:text-red-400 transition-colors" target="_blank" rel="noopener noreferrer">TMDB</a>
                 </span>
               </p>
+              <span className="text-xs text-gray-500">
+                This product uses the TMDB API but is not endorsed or certified by TMDB.
+              </span>
             </div>
             <div className="flex items-center gap-3 text-gray-400">
               <div className="flex flex-col items-center px-4 py-2 bg-zinc-800/50 rounded-lg">
